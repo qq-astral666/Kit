@@ -46,6 +46,9 @@ find "$APP/Contents/PlugIns" "$APP/Contents/Resources/qml" -name '*.dylib' 2>/de
             fi
         done
     done
+# macdeployqt links QML plugins from Resources/qml into PlugIns; drop the
+# links left dangling above, or codesign fails with "No such file or directory".
+find "$APP/Contents" -type l ! -exec test -e {} \; -print -delete
 # 2) The linker leaves Homebrew's Qt dir as an LC_RPATH. dyld then resolves
 #    @rpath/Qt* to /opt/homebrew, two QtCores get loaded, and after any
 #    `brew upgrade qt` the app segfaults on launch. Strip absolute rpaths.
